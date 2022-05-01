@@ -24,8 +24,9 @@ contract MyERC20 is IERC20 {
 
     string public constant name = "Gaurav";
     string public constant symbol = "GP";
-    uint8 public constant decimals = 6;
+    uint8 public constant decimals = 0;
     address public owner1;
+    uint256 private totalSupply_ ;
 
 
     mapping(address => uint256) balances;
@@ -34,7 +35,7 @@ contract MyERC20 is IERC20 {
 
     mapping(address => mapping (address => uint256)) allowed;
 
-    uint256 totalSupply_ = 0 ether;
+    
 
 
    constructor() {
@@ -96,8 +97,14 @@ contract MyERC20 is IERC20 {
         burnfrom(msg.sender, _value);
         }
 
-    function mint(address recipient, uint256 amount) public onlyMinters returns (bool) {
-        _mint(recipient, amount);
+   
+    function mint(address account, uint256 amount) public onlyMinters returns (bool) {
+        
+        require(account != address(0), "ERC20: mint to the zero address");
+        totalSupply_ = totalSupply_ + amount;
+        balances[account] = balances[account] + amount;
+        emit Transfer(account , address(0), amount);
+
         return true;
     }
 
@@ -112,10 +119,5 @@ contract MyERC20 is IERC20 {
         emit Transfer(_who, address(0), _value);
     }
 
-     function _mint(address account, uint256 amount) internal onlyMinters {
-        require(account != address(0), "ERC20: mint to the zero address");
-        totalSupply_ = totalSupply_ + amount;
-        balances[account] = balances[account] + amount;
-        emit Transfer(account , address(0), amount);
-    }
+    
 }
